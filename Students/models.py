@@ -1,10 +1,10 @@
 from django.db import models
 
 COURSES = [
-    ('BS-CS', 'BS in Computer Science'),
-    ('BS-DS', 'BS in Data Science'),
-    ('BS-IT', 'BS in Information Technology'),
-    ('BS-IS', 'BS in Information Systems'),
+    ('BS-CS', 'BS-CS'),
+    ('BS-DS', 'BS-DS'),
+    ('BS-IT', 'BS-IT'),
+    ('BS-IS', 'BS-IS'),
 ]
 
 GENDER = [

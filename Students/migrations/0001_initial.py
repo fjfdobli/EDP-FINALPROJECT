@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Student',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('firstName', models.CharField(max_length=100)),
-                ('lastName', models.CharField(max_length=100)),
-                ('course', models.CharField(choices=[('BS-CS', 'BS in Computer Science'), ('BS-DS', 'BS in Data Science'), ('BS-IT', 'BS in Information Technology'), ('BS-IS', 'BS in Information Systems')], max_length=10)),
-                ('gender', models.CharField(choices=[('M', 'Male'), ('F', 'Female')], max_length=1)),
+                ('id', models.BigAutoField(auto_created = True, primary_key = True, serialize = False, verbose_name = 'ID')),
+                ('firstName', models.CharField(max_length = 100)),
+                ('lastName', models.CharField(max_length = 100)),
+                ('course', models.CharField(choices=[('BS-CS', 'BS-CS'), ('BS-DS', 'BS-DS'), ('BS-IT', 'BS-IT'), ('BS-IS', 'BS-IS')], max_length = 10)),
+                ('gender', models.CharField(choices=[('M', 'Male'), ('F', 'Female')], max_length = 1)),
                 ('age', models.PositiveIntegerField()),
             ],
         ),

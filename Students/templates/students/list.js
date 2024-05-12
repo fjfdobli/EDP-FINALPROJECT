@@ -18,8 +18,8 @@ function fetchStudentList() {
 }
 
 function updateStudentList(studentList) {
-    const table = document.querySelector('table tbody')
-    table.innerHTML = ''
+    const tableBody = document.getElementById('student-table-body')
+    tableBody.innerHTML = ''
 
     studentList.forEach(student => {
         const row = document.createElement('tr')
@@ -41,72 +41,51 @@ function updateStudentList(studentList) {
         row.appendChild(ageCell)
 
         const actionsCell = document.createElement('td')
+        
         const updateLink = document.createElement('a')
         updateLink.href = '#'
         updateLink.textContent = 'Update'
         updateLink.classList.add('text-blue-500', 'hover:text-blue-700')
+        updateLink.dataset.studentId = student.id
         actionsCell.appendChild(updateLink)
 
         const deleteLink = document.createElement('a')
         deleteLink.href = '#'
         deleteLink.textContent = 'Delete'
-        deleteLink.classList.add('text-red-500', 'hover:text-red-700')
+        deleteLink.classList.add('text-red-500', 'hover:text-red-700', 'ml-2')
+        deleteLink.dataset.studentId = student.id
         actionsCell.appendChild(deleteLink)
 
         row.appendChild(actionsCell)
-
-        table.appendChild(row)
+        tableBody.appendChild(row)
     })
 }
 
 function handleTableClick(event) {
     if (event.target.textContent === 'Update') {
-        const row = event.target.closest('tr')
-        editStudent(row)
+        const studentId = event.target.dataset.studentId
+        window.location.href = `/edit/${studentId}/`
     } else if (event.target.textContent === 'Delete') {
-        const row = event.target.closest('tr')
-        deleteStudent(row)
+        const confirmed = confirm('Are you sure you want to delete this student?')
+        if (confirmed) {
+            const studentId = event.target.dataset.studentId
+            deleteStudent(studentId)
+        }
     }
 }
 
-function editStudent(row) {
-    const cells = row.querySelectorAll('td')
-    cells.forEach((cell, index) => {
-        if (index !== cells.length - 1) {
-            const input = document.createElement('input')
-            input.value = cell.textContent
-            cell.textContent = ''
-            cell.appendChild(input)
+function deleteStudent(studentId) {
+    fetch(`/delete/${studentId}/`, {
+        method: 'DELETE'
+    })
+    .then(response => {
+        if (response.ok) {
+            fetchStudentList()
+        } else {
+            console.error('Failed to delete student')
         }
     })
-
-    const actionsCell = cells[cells.length - 1]
-    const updateLink = actionsCell.querySelector('a:first-child')
-    updateLink.textContent = 'Save'
-    updateLink.onclick = saveStudent.bind(null, row)
-}
-
-function saveStudent(row) {
-    const cells = row.querySelectorAll('td')
-    const student = {
-        firstName: cells[0].querySelector('input').value,
-        lastName: cells[1].querySelector('input').value,
-        course: cells[2].querySelector('input').value,
-        gender: cells[3].querySelector('input').value,
-        age: parseInt(cells[4].querySelector('input').value)
-    }
-
-    cells[0].textContent = `${student.firstName} ${student.lastName}`
-    cells[1].textContent = student.course
-    cells[2].textContent = student.gender
-    cells[3].textContent = student.age
-
-    const actionsCell = cells[cells.length - 1]
-    const saveLink = actionsCell.querySelector('a:first-child')
-    saveLink.textContent = 'Update'
-    saveLink.onclick = null
-}
-
-function deleteStudent(row) {
-    row.remove()
+    .catch(error => {
+        console.error('Error:', error)
+    })
 }

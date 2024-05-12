@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Student</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<div class="container mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-4">Edit Student</h1>
+    <form id="editStudentForm" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        {% csrf_token %}
+        <input type="hidden" name="student_id" value="{{ student.id }}">
+        <div class="mb-4">
+            <label for="firstName" class="block text-gray-700 text-sm font-bold mb-2">First Name:</label>
+            <input id="firstName" name="firstName" type="text" class="shadow appearance-none border rounded w-64 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="{{ student.firstName }}">
+        </div>
+        <div class="mb-4">
+            <label for="lastName" class="block text-gray-700 text-sm font-bold mb-2">Last Name:</label>
+            <input id="lastName" name="lastName" type="text" class="shadow appearance-none border rounded w-64 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="{{ student.lastName }}">
+        </div>
+        <div class="mb-4">
+            <label for="course" class="block text-gray-700 text-sm font-bold mb-2">Course:</label>
+            <select id="course" name="course" class="shadow appearance-none border rounded w-64 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <option value="#">Choose by pressing this field ↓</option>
+                <option value="BS-CS" {% if student.course == 'BS-CS' %} selected {% endif %}>BS-CS</option>
+                <option value="BS-DS" {% if student.course == 'BS-DS' %} selected {% endif %}>BS-DS</option>
+                <option value="BS-IT" {% if student.course == 'BS-IT' %} selected {% endif %}>BS-IT</option>
+                <option value="BS-IS" {% if student.course == 'BS-IS' %} selected {% endif %}>BS-IS</option>
+            </select>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">Gender:</label>
+            <div class="flex items-center">
+                <input type="radio" id="male" name="gender" value="Male" class="mr-2 leading-tight focus:outline-none focus:shadow-outline" {% if student.gender == 'Male' %} checked {% endif %}>
+                <label for="male" class="text-sm">Male</label>
+            </div>
+            <div class="flex items-center">
+                <input type="radio" id="female" name="gender" value="Female" class="mr-2 leading-tight focus:outline-none focus:shadow-outline" {% if student.gender == 'Female' %} checked {% endif %}>
+                <label for="female" class="text-sm">Female</label>
+            </div>
+        </div>
+        <div class="mb-6">
+            <label for="age" class="block text-gray-700 text-sm font-bold mb-2">Age:</label>
+            <input id="age" name="age" type="number" class="shadow appearance-none border rounded w-64 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" min="1" max="100" value="{{ student.age }}" required>
+        </div>
+        <div class="flex items-center justify-between">
+            <a href="./list.html">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Update Student</button>
+            </a>
+        </div>        
+    </form>
+</div>
+
+<script>
+    const editForm = document.getElementById('editStudentForm')
+
+    editForm.addEventListener('submit', async (e) => {
+        e.preventDefault()
+
+        const formData = new FormData(editForm);
+        const studentId = formData.get('student_id')
+
+        try {
+            const response = await fetch(`/edit/${studentId}/`, {
+                method: 'POST',
+                body: formData
+            })
+
+            if (response.ok) {
+                const data = await response.json()
+                if (data.success) {
+                    document.getElementById('editModal').style.display = 'none'
+                    refreshStudentList()
+                } else {
+                    console.error('Failed to update student:', data.errors)
+                }
+            } else {
+                console.error('Failed to update student')
+            }
+        } catch (error) {
+            console.error('Error updating student:', error)
+        }
+    })
+
+    async function refreshStudentList() {
+        try {
+            const response = await fetch('{% url "studentList" %}')
+
+            if (response.ok) {
+                const data = await response.text()
+                document.getElementById('student-table-body').innerHTML = data;
+            } else {
+                console.error('Failed to refresh student list')
+            }
+        } catch (error) {
+            console.error('Error refreshing student list:', error)
+        }
+    }
+</script>
+</body>
+</html>

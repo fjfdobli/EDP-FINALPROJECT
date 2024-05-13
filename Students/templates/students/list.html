@@ -46,8 +46,7 @@
             <td class="border px-4 py-2 text-center">{{ student.age }}</td>
             <td class="border px-4 py-2 text-center">
               <a
-                href="#"
-                onclick="openEditForm('{{ student.id }}')"
+                href="{% url 'updateStudent' student.id %}"
                 class="text-blue-500 hover:text-blue-700 update-btn"
                 >Update</a
               >
@@ -236,22 +235,7 @@
       }
 
       function openEditForm(studentId) {
-        const editUrl = "{% url 'updateStudent' 0 %}".replace("0", studentId)
-        const editWindow = window.open(
-          editUrl,
-          "Edit Student",
-          "width=600,height=600"
-        )
-
-        window.addEventListener("message", (event) => {
-          if (event.data === "studentUpdated") {
-            refreshStudentList()
-          }
-        })
-
-        editWindow.onunload = () => {
-          window.postMessage("studentUpdated", "*")
-        }
+        window.location.href = `/edit/${studentId}/`
       }
     </script>
   </body>

@@ -1,242 +1,60 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Student List</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
-      rel="stylesheet"
-    />
-  </head>
-  <body class="bg-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Student</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
     <div class="container mx-auto py-8">
-      <h1 class="text-3xl font-bold mb-4">Student List</h1>
-      <div class="mb-4">
-        <a
-          href="{% url 'addStudent' %}"
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >Add Student</a
-        >
-      </div>
+        <h1 class="text-3xl font-bold mb-4">Add Student</h1>
 
-      <table class="table-auto w-full mb-4">
-        <thead>
-          <tr>
-            <th class="px-4 py-2">Full Name</th>
-            <th class="px-4 py-2">Course</th>
-            <th class="px-4 py-2">Gender</th>
-            <th class="px-4 py-2">Age</th>
-            <th class="px-4 py-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="student-table-body">
-          {% for student in students %}
-          <tr>
-            <td class="border px-4 py-2 text-center">
-              {{ student.firstName }} {{ student.lastName }}
-            </td>
-            <td class="border px-4 py-2 text-center">
-              {{ student.get_course_display }}
-            </td>
-            <td class="border px-4 py-2 text-center">
-              {{ student.get_gender_display }}
-            </td>
-            <td class="border px-4 py-2 text-center">{{ student.age }}</td>
-            <td class="border px-4 py-2 text-center">
-              <a
-                href="{% url 'updateStudent' student.id %}"
-                class="text-blue-500 hover:text-blue-700 update-btn"
-                >Update</a
-              >
-              <a
-                href="#"
-                class="text-red-500 hover:text-red-700 ml-2 delete-link"
-                data-student-id="{{ student.id }}"
-                >Delete</a
-              >
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+        <form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            {% csrf_token %}
+            <input type="hidden" name="student_id" value="{{ student.id }}">
+            <div class="mb-4">
+                <label for="first_name" class="block text-gray-700 text-sm font-bold mb-2">First Name:</label>
+                <input id="first_name" name="firstName" type="text" class="shadow appearance-none border rounded w-64 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="{{ student.firstName }}">
+            </div>
+            <div class="mb-4">
+                <label for="last_name" class="block text-gray-700 text-sm font-bold mb-2">Last Name:</label>
+                <input id="last_name" name="lastName" type="text" class="shadow appearance-none border rounded w-64 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="{{ student.lastName }}">
+            </div>
+            <div class="mb-4">
+                <label for="course" class="block text-gray-700 text-sm font-bold mb-2">Course:</label>
+                <select id="course" name="course" class="shadow appearance-none border rounded w-64 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="#">Choose by pressing this field ↓</option>
+                    <option value="BS-CS" {% if student.course == 'BS-CS' %} selected {% endif %}>BS-CS</option>
+                    <option value="BS-DS" {% if student.course == 'BS-DS' %} selected {% endif %}>BS-DS</option>
+                    <option value="BS-IT" {% if student.course == 'BS-IT' %} selected {% endif %}>BS-IT</option>
+                    <option value="BS-IS" {% if student.course == 'BS-IS' %} selected {% endif %}>BS-IS</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">Gender:</label>
+                <div class="flex items-center">
+                    <input type="radio" id="male" name="gender" value="Male" class="mr-2 leading-tight focus:outline-none focus:shadow-outline" {% if student.gender == 'Male' %} checked {% endif %}>
+                    <label for="male" class="text-sm">Male</label>
+                </div>
+                <div class="flex items-center">
+                    <input type="radio" id="female" name="gender" value="Female" class="mr-2 leading-tight focus:outline-none focus:shadow-outline" {% if student.gender == 'Female' %} checked {% endif %}>
+                    <label for="female" class="text-sm">Female</label>
+                </div>
+            </div>
+            <div class="mb-6">
+                <label for="age" class="block text-gray-700 text-sm font-bold mb-2">Age:</label>
+                <input id="age" name="age" type="number" class="shadow appearance-none border rounded w-64 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" min="1" max="100" value="{{ student.age }}" required>
+            </div>
+            <div class="flex items-center justify-between">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Submit
+                </button>
+            </div>
+        </form>
+        
+
     </div>
-
-    <div class="mb-4">
-      <form id="filter-form" class="flex justify-between">
-        <div>
-          <label
-            for="name-filter"
-            class="block text-gray-700 text-sm font-bold mb-2"
-            >Full Name:</label
-          >
-          <input
-            id="name-filter"
-            name="name"
-            type="text"
-            class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            placeholder="Enter full name"
-          />
-        </div>
-        <div>
-          <label class="block text-gray-700 text-sm font-bold mb-2"
-            >Gender:</label
-          >
-          <div>
-            <input
-              type="radio"
-              id="gender-male"
-              name="gender"
-              value="Male"
-              class="mr-2 leading-tight focus:outline-none focus:shadow-outline"
-            />
-            <label for="gender-male" class="text-sm">Male</label>
-          </div>
-          <div>
-            <input
-              type="radio"
-              id="gender-female"
-              name="gender"
-              value="Female"
-              class="mr-2 leading-tight focus:outline-none focus:shadow-outline"
-            />
-            <label for="gender-female" class="text-sm">Female</label>
-          </div>
-        </div>
-        <div>
-          <label class="block text-gray-700 text-sm font-bold mb-2"
-            >Courses:</label
-          >
-          <div>
-            <input
-              type="radio"
-              id="course-bs-cs"
-              name="course"
-              value="BS-CS"
-              class="mr-2 leading-tight focus:outline-none focus:shadow-outline"
-            />
-            <label for="course-bs-cs" class="text-sm">BSCS</label>
-          </div>
-          <div>
-            <input
-              type="radio"
-              id="course-bs-ds"
-              name="course"
-              value="BS-DS"
-              class="mr-2 leading-tight focus:outline-none focus:shadow-outline"
-            />
-            <label for="course-bs-ds" class="text-sm">BSDS</label>
-          </div>
-          <div>
-            <input
-              type="radio"
-              id="course-bs-it"
-              name="course"
-              value="BS-IT"
-              class="mr-2 leading-tight focus:outline-none focus:shadow-outline"
-            />
-            <label for="course-bs-it" class="text-sm">BSIT</label>
-          </div>
-          <div>
-            <input
-              type="radio"
-              id="course-bs-is"
-              name="course"
-              value="BS-IS"
-              class="mr-2 leading-tight focus:outline-none focus:shadow-outline"
-            />
-            <label for="course-bs-is" class="text-sm">BSIS</label>
-          </div>
-        </div>
-        <div>
-          <label class="block text-gray-700 text-sm font-bold mb-2">Age:</label>
-          <div class="flex">
-            <input
-              id="min-age"
-              name="minAge"
-              type="number"
-              class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2"
-              min="1"
-              max="100"
-              placeholder="Min"
-            />
-            <input
-              id="max-age"
-              name="maxAge"
-              type="number"
-              class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              min="1"
-              max="100"
-              placeholder="Max"
-            />
-          </div>
-        </div>
-        <button
-          type="submit"
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        >
-          Apply Filters
-        </button>
-      </form>
-    </div>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const deleteLinks = document.querySelectorAll(".delete-link")
-
-        deleteLinks.forEach((link) => {
-          link.addEventListener("click", (e) => {
-            e.preventDefault()
-
-            const studentId = link.getAttribute("data-student-id")
-            const url = `/delete/${studentId}/`
-
-            const csrftoken = getCookie("csrftoken")
-
-            if (confirm("Are you sure you want to delete this student?")) {
-              fetch(url, {
-                method: "DELETE",
-                headers: {
-                  "X-CSRFToken": csrftoken,
-                },
-              })
-                .then((response) => {
-                  if (response.ok) {
-                    window.location.reload()
-                  } else {
-                    throw new Error("Failed to delete student")
-                  }
-                })
-                .catch((error) => {
-                  console.error("Delete request failed:", error)
-                })
-            }
-          })
-        })
-      })
-
-      function getCookie(name) {
-        let cookieValue = null
-        if (document.cookie && document.cookie !== "") {
-          const cookies = document.cookie.split(";")
-          for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim()
-
-            if (cookie.startsWith(name + "=")) {
-              cookieValue = decodeURIComponent(
-                cookie.substring(name.length + 1)
-              )
-              break
-            }
-          }
-        }
-        return cookieValue
-      }
-
-      function openEditForm(studentId) {
-        window.location.href = `/edit/${studentId}/`
-      }
-    </script>
-  </body>
+</body>
 </html>

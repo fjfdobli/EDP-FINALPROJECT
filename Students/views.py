@@ -57,9 +57,12 @@ def studentList(request):
 
 
     if name:
-        students = students.filter(
-            Q(firstName__icontains=name) | Q(lastName__icontains=name)
-        )
+        name_parts = name.split()
+        name_query = Q()
+        for part in name_parts:
+            name_query |= Q(firstName__icontains=part) | Q(lastName__icontains=part)
+        
+        students = students.filter(name_query)
     if gender:
         students = students.filter(gender=gender)
     if course:

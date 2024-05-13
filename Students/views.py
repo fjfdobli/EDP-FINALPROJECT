@@ -24,26 +24,18 @@ def addStudent(request):
 
 def updateStudent(request, student_id):
     student = get_object_or_404(Student, pk=student_id)
-    
+
     if request.method == 'POST':
         form = StudentForm(request.POST, instance=student)
         if form.is_valid():
-            updated_student = form.save(commit=False)
-            updated_student.save()
-            updated_data = {
-                'firstName': updated_student.firstName,
-                'lastName': updated_student.lastName,
-                'course': updated_student.get_course_display(),
-                'gender': updated_student.get_gender_display(),
-                'age': updated_student.age
-            }
-            return JsonResponse({'success': True, 'data': updated_data})
-        else:
-            return JsonResponse({'success': False, 'errors': form.errors})
+            form.save()
+            return redirect('studentList')  
     else:
-        form = StudentForm(instance=student)
-    
-    return render(request, 'Students/edit.html', {'form': form, 'student': student})
+        form = StudentForm(instance=student)  
+
+    context = {'form': form, 'student': student}
+    return render(request, 'Students/add.html', context)
+
 
 def deleteStudent(request, student_id):
     if request.method == 'DELETE':
